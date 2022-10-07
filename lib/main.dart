@@ -1,5 +1,7 @@
 import 'package:chat_app/firebase_options.dart';
 import 'package:chat_app/provider/auth_provider.dart';
+import 'package:chat_app/provider/home_provider.dart';
+import 'package:chat_app/screens/home_page.dart';
 import 'package:chat_app/screens/login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +18,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  runApp(MyApp(sharedPreferences: sharedPreferences,));
+  runApp(MyApp(
+    sharedPreferences: sharedPreferences,
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -27,10 +31,8 @@ class MyApp extends StatelessWidget {
   final SharedPreferences sharedPreferences;
   final firebaseAuth = FirebaseAuth.instance;
 
-
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(
@@ -39,6 +41,11 @@ class MyApp extends StatelessWidget {
             firebaseAuth: firebaseAuth,
             firebaseFirestore: firebaseFirestore,
             sharedPreferences: sharedPreferences,
+          ),
+        ),
+        Provider<HomeProvider>(
+          create: (_) => HomeProvider(
+            firebaseFirestore: firebaseFirestore,
           ),
         ),
       ],

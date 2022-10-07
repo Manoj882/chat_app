@@ -31,7 +31,7 @@ class AuthProvider extends ChangeNotifier{
     required this.sharedPreferences,
   });
   
-  String? getFirebaseUserid(){
+  String? getFirebaseUserId(){
     return sharedPreferences.getString(FirestoreConstant.id);
   }
 
@@ -102,5 +102,11 @@ class AuthProvider extends ChangeNotifier{
 
    
 
+  }
+  Future<void> googleSignOut() async{
+    _status = Status.uninitialized;
+    await firebaseAuth.signOut();
+    await googleSignIn.disconnect();
+    await googleSignIn.signOut();
   }
 }
