@@ -1,8 +1,11 @@
 import 'package:chat_app/firebase_options.dart';
 import 'package:chat_app/provider/auth_provider.dart';
 import 'package:chat_app/provider/home_provider.dart';
+import 'package:chat_app/provider/profile_provider.dart';
 import 'package:chat_app/screens/home_page.dart';
 import 'package:chat_app/screens/login_page.dart';
+import 'package:chat_app/screens/profile_page.dart';
+import 'package:chat_app/screens/splash_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -48,13 +51,22 @@ class MyApp extends StatelessWidget {
             firebaseFirestore: firebaseFirestore,
           ),
         ),
+        Provider(
+          create: (_) => ProfileProvider(
+              sharedPreferences: sharedPreferences,
+              firebaseFirestore: firebaseFirestore,
+              firebaseStorage: firebaseStorage),
+        ),
       ],
       child: MaterialApp(
         title: 'Chat App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const LoginPage(),
+        // home: const LoginPage(),
+        // home: const ProfilePage(),
+        home: const SplashPage(),
+       
       ),
     );
   }

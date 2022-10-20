@@ -17,6 +17,21 @@ class ChatUser {
     required this.aboutMe,
   });
 
+  ChatUser copyWith({
+    String? id,
+    String? photoUrl,
+    String? nickname,
+    String? phoneNumber,
+    String? email,
+  }) =>
+      ChatUser(
+        id: id ?? this.id,
+        photoUrl: photoUrl ?? this.photoUrl,
+        displayName: nickname ?? displayName,
+        phoneNumber: phoneNumber ?? this.phoneNumber,
+        aboutMe: email ?? aboutMe,
+      );
+
   Map<String, dynamic> toJson() => {
         FirestoreConstant.displayName: displayName,
         FirestoreConstant.photoUrl: photoUrl,

@@ -5,6 +5,8 @@ import 'package:chat_app/models/chat_user_model.dart';
 import 'package:chat_app/provider/auth_provider.dart';
 import 'package:chat_app/provider/home_provider.dart';
 import 'package:chat_app/screens/login_page.dart';
+import 'package:chat_app/screens/profile_page.dart';
+import 'package:chat_app/utils/debouncer.dart';
 import 'package:chat_app/utils/dialog_screen.dart';
 import 'package:chat_app/utils/keyboard_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,9 +26,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController searchTextEditingController = TextEditingController();
+  final googleSignIn = GoogleSignIn();
+
   final scrollController = ScrollController();
-  StreamController<bool> buttonClearController = StreamController<bool>();
+ 
 
   late AuthProvider authProvider;
   late HomeProvider homeProvider;
@@ -36,23 +40,30 @@ class _HomePageState extends State<HomePage> {
   String _textSearch = '';
   bool isLoading = false;
 
+  Debouncer searchDebouncer = Debouncer(milliseconds: 300);
+  StreamController<bool> buttonClearController = StreamController<bool>();
+  TextEditingController searchTextEditingController = TextEditingController();
+
+  
   Future<void> googleSignOut() async {
     authProvider.googleSignOut();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LoginPage(),
+        builder: (context) => const LoginPage(),
       ),
     );
   }
+
 
   Future<bool> onBackPress() {
     DialogScreens().openDialog(context);
     return Future.value(false);
   }
 
-  void scrollListner(){
-    if(scrollController.offset >= scrollController.position.maxScrollExtent && !scrollController.position.outOfRange){
+  void scrollListner() {
+    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
       setState(() {
         _limit += _limitIncrement;
       });
@@ -74,7 +85,7 @@ class _HomePageState extends State<HomePage> {
       currrentUserId = authProvider.getFirebaseUserId()!;
     } else {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
         (route) => false,
       );
     }
@@ -86,7 +97,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Chat App',
         ),
         actions: [
@@ -94,13 +105,20 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               googleSignOut();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.logout_outlined,
             ),
           ),
           IconButton(
-            onPressed: () {},
-            icon: Icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfilePage(),
+                ),
+              );
+            },
+            icon: const Icon(
               Icons.person_outlined,
             ),
           ),
@@ -126,13 +144,13 @@ class _HomePageState extends State<HomePage> {
                             shrinkWrap: true,
                             controller: scrollController,
                             itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index){
-                              return buildItem(context, snapshot.data!.docs[index]);
+                            itemBuilder: (context, index) {
+                              return buildItem(
+                                  context, snapshot.data!.docs[index]);
                             },
-                            separatorBuilder: (context, index){
+                            separatorBuilder: (context, index) {
                               return const Divider();
                             },
-                            
                           );
                         } else {
                           return const Center(
@@ -224,15 +242,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildItem(BuildContext context, DocumentSnapshot documentSnapshot){
+  Widget buildItem(BuildContext context, DocumentSnapshot documentSnapshot) {
     final firebaseAuth = FirebaseAuth.instance;
-    if(documentSnapshot != null){
+    if (documentSnapshot != null) {
       ChatUser chatUser = ChatUser.fromDocument(documentSnapshot);
-      if(chatUser.id == currrentUserId){
+      if (chatUser.id == currrentUserId) {
         return const SizedBox.shrink();
       } else {
         return TextButton(
-          onPressed: (){
+          onPressed: () {
             // if(KeyboardUtils.isKeyboardShowing()){
             //   KeyboardUtils.closeKeyboard(context);
             // }
@@ -245,54 +263,55 @@ class _HomePageState extends State<HomePage> {
             //               peerNickname: userChat.displayName,
             //               userAvatar: firebaseAuth.currentUser!.photoURL!,
             //             )));
-          
-          }, 
+          },
           child: ListTile(
             leading: chatUser.photoUrl.isNotEmpty
-            ? ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: Image.network(
-                chatUser.photoUrl,
-                fit: BoxFit.cover,
-                width: 50,
-                height: 50,
-                loadingBuilder: (BuildContext ctx, Widget child, ImageChunkEvent? loadingProgress){
-                  if(loadingProgress == null){
-                    return child;
-                  } else{
-                    return SizedBox(
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.network(
+                      chatUser.photoUrl,
+                      fit: BoxFit.cover,
                       width: 50,
                       height: 50,
-                      child: CircularProgressIndicator(
-                        color: Colors.grey,
-                        value: loadingProgress.expectedTotalBytes != null 
-                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! 
-                        : null,
-                      ),
-                    );
-                  }
-                },
-                errorBuilder: (context, object, stackTree){
-                  return const Icon(Icons.account_circle_outlined, size: 50,);
-                },
-
-              ),
-            )
-            : const Icon(
-              Icons.account_circle_outlined,
-              size: 50,
-            ),
+                      loadingBuilder: (BuildContext ctx, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircularProgressIndicator(
+                              color: Colors.grey,
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (context, object, stackTree) {
+                        return const Icon(
+                          Icons.account_circle_outlined,
+                          size: 50,
+                        );
+                      },
+                    ),
+                  )
+                : const Icon(
+                    Icons.account_circle_outlined,
+                    size: 50,
+                  ),
             title: Text(
               chatUser.displayName,
               style: TextStyle(color: Colors.black),
             ),
-            
-
           ),
-          );
+        );
       }
-    } else{
-      return const SizedBox.shrink(); 
+    } else {
+      return const SizedBox.shrink();
     }
   }
 }

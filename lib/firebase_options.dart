@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '632601885814',
     projectId: 'chat-app-2ac28',
     storageBucket: 'chat-app-2ac28.appspot.com',
+    androidClientId: '632601885814-qcp5trj3k8ijcd33p6evddeo34r18fn6.apps.googleusercontent.com',
     iosClientId: '632601885814-fesgaiqsdhf3vomc1e3qdu5od05a2m0o.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatApp',
   );
@@ -77,6 +78,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '632601885814',
     projectId: 'chat-app-2ac28',
     storageBucket: 'chat-app-2ac28.appspot.com',
+    androidClientId: '632601885814-qcp5trj3k8ijcd33p6evddeo34r18fn6.apps.googleusercontent.com',
     iosClientId: '632601885814-fesgaiqsdhf3vomc1e3qdu5od05a2m0o.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatApp',
   );
