@@ -349,15 +349,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   maxLength: 14,
                   decoration: kTextInputDecoration.copyWith(
                     hintText: 'Phone Number',
-                    prefix: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        dialCodeDigits,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
+                    // prefix: Padding(
+                    //   padding: const EdgeInsets.all(4.0),
+                    //   child: Text(
+                    //     dialCodeDigits,
+                    //     style: const TextStyle(
+                    //       color: Colors.grey,
+                    //     ),
+                    //   ),
+                    // ),
                   ),
                   controller: phoneController,
                 ),

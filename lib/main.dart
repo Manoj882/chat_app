@@ -1,7 +1,9 @@
 import 'package:chat_app/firebase_options.dart';
 import 'package:chat_app/provider/auth_provider.dart';
+import 'package:chat_app/provider/chat_provider.dart';
 import 'package:chat_app/provider/home_provider.dart';
 import 'package:chat_app/provider/profile_provider.dart';
+import 'package:chat_app/screens/chat_page.dart';
 import 'package:chat_app/screens/home_page.dart';
 import 'package:chat_app/screens/login_page.dart';
 import 'package:chat_app/screens/profile_page.dart';
@@ -57,6 +59,11 @@ class MyApp extends StatelessWidget {
               firebaseFirestore: firebaseFirestore,
               firebaseStorage: firebaseStorage),
         ),
+        Provider(create: (_) => ChatProvider(
+          sharedPreferences: sharedPreferences,
+          firebaseFirestore: firebaseFirestore,
+          firebaseStorage: firebaseStorage,
+        )),
       ],
       child: MaterialApp(
         title: 'Chat App',
@@ -66,6 +73,7 @@ class MyApp extends StatelessWidget {
         // home: const LoginPage(),
         // home: const ProfilePage(),
         home: const SplashPage(),
+        
        
       ),
     );

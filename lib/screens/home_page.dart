@@ -4,6 +4,7 @@ import 'package:chat_app/constants/firestore_constant.dart';
 import 'package:chat_app/models/chat_user_model.dart';
 import 'package:chat_app/provider/auth_provider.dart';
 import 'package:chat_app/provider/home_provider.dart';
+import 'package:chat_app/screens/chat_page.dart';
 import 'package:chat_app/screens/login_page.dart';
 import 'package:chat_app/screens/profile_page.dart';
 import 'package:chat_app/utils/debouncer.dart';
@@ -251,18 +252,18 @@ class _HomePageState extends State<HomePage> {
       } else {
         return TextButton(
           onPressed: () {
-            // if(KeyboardUtils.isKeyboardShowing()){
-            //   KeyboardUtils.closeKeyboard(context);
-            // }
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => ChatPage(
-            //               peerId: userChat.id,
-            //               peerAvatar: userChat.photoUrl,
-            //               peerNickname: userChat.displayName,
-            //               userAvatar: firebaseAuth.currentUser!.photoURL!,
-            //             )));
+            if(KeyboardUtils.isKeyboardShowing()){
+              KeyboardUtils.closeKeyboard(context);
+            }
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                          peerId: chatUser.id,
+                          peerAvatar: chatUser.photoUrl,
+                          peerNickname: chatUser.displayName,
+                          userAvatar: firebaseAuth.currentUser!.photoURL!,
+                        )));
           },
           child: ListTile(
             leading: chatUser.photoUrl.isNotEmpty
